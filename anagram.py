@@ -1,13 +1,11 @@
 #!/usr/bin/env python2.7
 
-import re, sys
+import re, string, sys
 
-ord_offset = ord('a')
+base_word = {}
 
-letter_bits = []
-
-for i in range(0, ord('z') - ord_offset + 1):
-  letter_bits.append(2**i)
+for c in string.lowercase:
+  base_word[c] = 0
 
 for line in sys.stdin:
   line = re.sub('[\W\d]+', ' ', line)
@@ -15,8 +13,8 @@ for line in sys.stdin:
     if len(word) < 4:
       continue
     word = word.lower()
-    id = 0
+    data = base_word.copy()
     for c in word:
-      id |= letter_bits[ord(c) - ord_offset]
-    print "{} is {}".format(word, id)
+      data[c] += 1
+    print "{} is {}".format(word, data)
 

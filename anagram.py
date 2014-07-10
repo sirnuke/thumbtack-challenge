@@ -2,10 +2,10 @@
 
 import re, string, sys
 
-base_word = {}
 
-for c in string.lowercase:
-  base_word[c] = 0
+ord_offset = ord('a')
+
+base_word = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 
 for line in sys.stdin:
   line = re.sub('[\W\d]+', ' ', line)
@@ -13,8 +13,8 @@ for line in sys.stdin:
     if len(word) < 4:
       continue
     word = word.lower()
-    data = base_word.copy()
+    data = list(base_word)
     for c in word:
-      data[c] += 1
+      data[ord(c) - ord_offset] += 1
     print "{} is {}".format(word, data)
 

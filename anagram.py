@@ -4,7 +4,7 @@ import re
 import sys
 
 ORD_OFFSET = ord('a')
-ANAGRAM_LENGTH = 2
+ANAGRAM_LENGTH = 10
 MINIMUM_WORD_LENGTH = 4
 
 class Word(object):
@@ -55,8 +55,11 @@ class Corpus(object):
       line = re.sub('[\W\d]+', ' ', line)
       for w in line.split():
         self._add_word(w)
+    print "Done adding words"
     self._iterate_word_pairs(list(), 0, ANAGRAM_LENGTH, len(self._words))
+    print "Done getting pairs"
     self._find_matches()
+    print "Done finding matches"
 
   def _add_word(self, word):
     if len(word) < MINIMUM_WORD_LENGTH:
@@ -87,5 +90,5 @@ class Corpus(object):
 corpus = Corpus()
 corpus.process()
 for match in corpus.matches:
-  print "Found Match: {}".format(match)
+  print match
 

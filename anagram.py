@@ -9,20 +9,15 @@ MINIMUM_WORD_LENGTH = 4
 
 class Word(object):
   def __init__(self, word):
-    self.length = len(word)
-    assert(self.length >= MINIMUM_WORD_LENGTH)
+    assert(len(word) >= MINIMUM_WORD_LENGTH)
     self.original = word
     self.composition = [0] * 26
     for char in word.lower():
       self.composition[ord(char) - ORD_OFFSET] += 1
 
-  def __len__(self):
-    return self._length
-
 class Pair(object):
   def __init__(self, words):
-    self._length = len(words)
-    assert(self._length == ANAGRAM_LENGTH)
+    assert(len(words) == ANAGRAM_LENGTH)
     self.words = []
     self.compare_string = ''
     for i in range(26):
@@ -30,12 +25,6 @@ class Pair(object):
         self.compare_string += chr(i + ORD_OFFSET) * word.composition[i]
     for word in words:
       self.words.append(word.original)
-
-  def __str__(self):
-    return str(self.words)
-
-  def __len__(self):
-    return self._length
 
 class Match(object):
   def __init__(self, pairs):
@@ -94,13 +83,6 @@ class Corpus(object):
     for i,row in self._pairs.iteritems():
       if len(row) > 1:
         self.matches.append(Match(row))
-
-def process_words_into_pairs(corpus, words):
-  if not length in corpus['pairs']:
-    corpus['pairs'][length] = {}
-  if not compare in corpus['pairs'][length]:
-    corpus['pairs'][length][compare] = list()
-  corpus['pairs'][length][compare].append(pair)
 
 corpus = Corpus()
 corpus.process()

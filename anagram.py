@@ -4,7 +4,7 @@ import re, sys
 
 ord_offset = ord('a')
 
-empty_word = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+empty_word = [0] * 26
 
 corpus = { 'words' : [], 'pairs' : {} }
 

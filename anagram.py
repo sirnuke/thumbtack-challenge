@@ -34,6 +34,18 @@ def create_compare_string(words):
       compare += char*word["data"][i]
   return compare
 
+def process_words_into_pairs(corpus, words):
+  compare = create_compare_string(words)
+  length = len(compare)
+  pair = []
+  for word in words:
+    pair.append(word['original'])
+  if not length in corpus['pairs']:
+    corpus['pairs'][length] = {}
+  if not compare in corpus['pairs'][length]:
+    corpus['pairs'][length][compare] = list()
+  corpus['pairs'][length][compare].append(pair)
+
 def iterate_words(corpus, words, position, length, end):
   if length >= 1:
     while position + length < end:
@@ -42,7 +54,7 @@ def iterate_words(corpus, words, position, length, end):
       iterate_words(corpus, words, position, length - 1, end)
       words.pop()
   else:
-    print "Check {}".format(words)
+    process_words_into_pairs(corpus, words)
 
 for line in sys.stdin:
   line = re.sub('[\W\d]+', ' ', line)
@@ -57,4 +69,14 @@ for line in sys.stdin:
     else:
       print "{} is a duplicate".format(s)
   iterate_words(corpus, list(), 0, 2, len(corpus['words']))
+
+  for i,row in corpus['pairs'].iteritems():
+    for j,pairs in row.iteritems():
+      if len(pairs) > 1:
+        sys.stdout.write('Found match: ')
+        for match in pairs:
+          for word in match:
+            sys.stdout.write("{},".format(word))
+          sys.stdout.write(" ")
+        print
 

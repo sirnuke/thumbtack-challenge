@@ -36,13 +36,11 @@ def create_compare_string(words):
 
 def iterate_words(corpus, words, position, length, end):
   if length >= 1:
-    words.append(corpus['words'][position])
-    position += 1
-    length -= 1
-    while position < end:
-      iterate_words(corpus, results, words, position, length)
+    while position + length < end:
+      words.append(corpus['words'][position])
       position += 1
-    words.pop()
+      iterate_words(corpus, words, position, length - 1, end)
+      words.pop()
   else:
     print "Check {}".format(words)
 
@@ -58,4 +56,5 @@ for line in sys.stdin:
       corpus['words'].append(word)
     else:
       print "{} is a duplicate".format(s)
+  iterate_words(corpus, list(), 0, 2, len(corpus['words']))
 

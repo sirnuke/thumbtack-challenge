@@ -1,13 +1,12 @@
 #!/usr/bin/env python2.7
 
-import re, string, sys
-
+import re, sys
 
 ord_offset = ord('a')
 
 empty_word = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 
-corpus = []
+corpus = { 'words' : [], 'pairs' : {} }
 
 def process_word(s):
   length = len(s)
@@ -22,7 +21,7 @@ def process_word(s):
 
 
 def is_duplicate(corpus, word):
-  for w in corpus:
+  for w in corpus['words']:
     if w['original'] == word['original']:
       return True
   return False
@@ -35,6 +34,18 @@ def create_compare_string(words):
       compare += char*word["data"][i]
   return compare
 
+def iterate_words(corpus, words, position, length, end):
+  if length >= 1:
+    words.append(corpus['words'][position])
+    position += 1
+    length -= 1
+    while position < end:
+      iterate_words(corpus, results, words, position, length)
+      position += 1
+    words.pop()
+  else:
+    print "Check {}".format(words)
+
 for line in sys.stdin:
   line = re.sub('[\W\d]+', ' ', line)
   for s in line.split():
@@ -44,7 +55,7 @@ for line in sys.stdin:
 
     if not is_duplicate(corpus, word):
       print "{} is {}".format(s, word['data'])
-      corpus.append(word)
+      corpus['words'].append(word)
     else:
       print "{} is a duplicate".format(s)
 

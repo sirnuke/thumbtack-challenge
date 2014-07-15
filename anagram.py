@@ -13,28 +13,25 @@ class Corpus(object):
     self._words = []
 
   def stdin(self):
-    #for line in re.sub('[\W\d]+', ' ', sys.stdin.read()).split('\n'):
-    for line in sys.stdin:
-      line = re.sub('[\W\d]+', ' ', line)
-      for w in line.split():
-        self.add_word(w)
+    for word in re.sub('[\W\d]+', ' ', sys.stdin.read()).split():
+      self.add_word(word)
 
   def add_word(self, word):
     if len(word) < MINIMUM_WORD_LENGTH:
       return
     word = word.lower()
     for w in self._words:
-      if w == word:
+      if w[0] == word:
         return
-    self._words.append(word)
+    self._words.append((word, sorted(word)))
 
   def find_matches(self, length=ANAGRAM_LENGTH, only_longest=ONLY_LONGEST):
     matches = []
     data = {}
     key_length = MINIMUM_WORD_LENGTH * length
     for pair in itertools.combinations(self._words, length):
-      t = ''.join(sorted(itertools.chain.from_iterable(pair)))
-
+      k = pair[0][0] + ', ' + pair[1][0]
+      t = ''.join(sorted(pair[0][1] + pair[1][1]))
 
 if __name__ == '__main__':
   corpus = Corpus()

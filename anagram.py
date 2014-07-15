@@ -27,8 +27,7 @@ class Corpus(object):
 
   def find_matches(self, length=ANAGRAM_LENGTH, only_longest=ONLY_LONGEST):
     matches = []
-    data = {}
-    key_length = MINIMUM_WORD_LENGTH * length
+    match_length = 1
     for pair in itertools.combinations(self._words, length):
       k = pair[0][0] + ', ' + pair[1][0]
       t = ''.join(sorted(pair[0][1] + pair[1][1]))

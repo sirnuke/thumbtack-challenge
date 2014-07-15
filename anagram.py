@@ -1,94 +1,65 @@
 #!/usr/bin/env python2.7
 
+import itertools
 import re
 import sys
 
-ORD_OFFSET = ord('a')
-ANAGRAM_LENGTH = 10
+_ORD_A = ord('a')
+DEFAULT_ANAGRAM_LENGTH = 2
 MINIMUM_WORD_LENGTH = 4
-
-class Word(object):
-  def __init__(self, word):
-    assert(len(word) >= MINIMUM_WORD_LENGTH)
-    self.original = word
-    self.composition = [0] * 26
-    for char in word.lower():
-      self.composition[ord(char) - ORD_OFFSET] += 1
 
 class Pair(object):
   def __init__(self, words):
-    assert(len(words) == ANAGRAM_LENGTH)
-    self.words = []
-    self.compare_string = ''
-    for i in range(26):
-      for word in words:
-        self.compare_string += chr(i + ORD_OFFSET) * word.composition[i]
+    self.words = words
+    self.key = 0
+    self.length = 0
     for word in words:
-      self.words.append(word.original)
-
-class Match(object):
-  def __init__(self, pairs):
-    assert(len(pairs) > 1)
-    self.pairs = []
-    for pair in pairs:
-      self.pairs.append(pair.words)
-
-  def __str__(self):
-    res = ""
-    for i,pair in enumerate(self.pairs):
-      if i > 0:
-        res += "; "
-      for j,v in enumerate(pair):
-        if j > 0:
-          res += ","
-        res += v
-    return res
+      pass
+    #  self.length += len(word)
+      #for char in word.lower():
+        #self.key |= 2**(ord(char) - _ORD_A)
 
 class Corpus(object):
   def __init__(self):
     self._words = []
-    self._pairs = {}
+    self._composition = {}
     self.matches = []
 
-  def process(self):
+  def stdin(self):
+    #for line in re.sub('[\W\d]+', ' ', sys.stdin.read()).split('\n'):
     for line in sys.stdin:
       line = re.sub('[\W\d]+', ' ', line)
       for w in line.split():
-        self._add_word(w)
-    print "Done adding words"
-    self._iterate_word_pairs(list(), 0, ANAGRAM_LENGTH, len(self._words))
-    print "Done getting pairs"
-    self._find_matches()
-    print "Done finding matches"
+        self.add_word(w)
 
-  def _add_word(self, word):
+  def add_word(self, word):
     if len(word) < MINIMUM_WORD_LENGTH:
       return
+    word = word.lower()
     for w in self._words:
-      if w.original == word:
+      if w == word:
         return
-    self._words.append(Word(word))
+    self._words.append(word)
 
-  def _iterate_word_pairs(self, words, position, length, end):
-    if length > 0:
-      while position + length < end:
-        words.append(self._words[position])
-        position += 1
-        self._iterate_word_pairs(words, position, length - 1, end)
-        words.pop()
-    else:
-      p = Pair(words)
-      if not p.compare_string in self._pairs:
-        self._pairs[p.compare_string] = []
-      self._pairs[p.compare_string].append(p)
+  def find_matches(self, length):
+    for pair in itertools.permutations(self._words, length):
+      p = Pair(pair)
 
-  def _find_matches(self):
-    for i,row in self._pairs.iteritems():
-      if len(row) > 1:
-        self.matches.append(Match(row))
 
-corpus = Corpus()
-corpus.process()
-for match in corpus.matches:
-  print match
+if __name__ == '__main__':
+  anagram_length = DEFAULT_ANAGRAM_LENGTH
+  if len(sys.argv) > 2:
+    if sys.argv[1][0] == '-':
+      print "Usage: {} [anagram-length]".format(sys.argv[0])
+      print
+      print "Where anagram-length is the positive, integer length of each anagram [{}]" \
+          .format(DEFAULT_ANAGRAM_LENGTH)
+      exit()
+    anagram_length = int(sys.argv[1])
+    if anagram_length <= 0:
+      print "Invalid anagram-length of {}".format(sys.argv[1])
+      exit(1)
+
+  corpus = Corpus()
+  corpus.stdin()
 

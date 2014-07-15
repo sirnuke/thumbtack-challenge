@@ -5,7 +5,7 @@ import re
 import sys
 
 ANAGRAM_LENGTH = 2
-ONLY_LONGEST = True
+SET_LENGTH = None
 MINIMUM_WORD_LENGTH = 4
 KEY_LENGTH = 1
 
@@ -26,10 +26,13 @@ class Corpus(object):
         return
     self._words.append((word, sorted(word)))
 
-  def find_matches(self, length=ANAGRAM_LENGTH, only_longest=ONLY_LONGEST):
+  def find_matches(self, length=ANAGRAM_LENGTH, set_length=SET_LENGTH):
     matches = []
     data = {}
-    match_length = 2
+    if set_length:
+      match_length = set_length
+    else:
+      match_length = 2
     for pair in itertools.combinations(self._words, length):
       n = pair[0][0] + ', ' + pair[1][0]
       t = ''.join(sorted(pair[0][1] + pair[1][1]))
@@ -39,22 +42,36 @@ class Corpus(object):
       if t in data[k]:
         data[k][t].append(n)
         l = len(data[k][t])
-        if l > match_length:
-          match_length += 1
-          matches = [t]
-        elif l == match_length:
-          matches.append(t)
+        if set_length:
+          if l > match_length:
+            match_length += 1
+            matches = [t]
+          elif l == match_length:
+            matches.append(t)
+        else:
+          if l == match_length + 1:
+            matches.remove(t)
+          elif l == match_length:
+            matches.append(t)
       else:
         data[k][t] = [n]
-    print "[length is {}]".format(match_length)
+    if not set_length:
+      print "[length is {}]".format(match_length)
     for t in matches:
       k = t[:KEY_LENGTH]
       print '; '.join(data[k][t])
 
-
-
 if __name__ == '__main__':
+  set_length = SET_LENGTH
+  if len(sys.argv) >= 2:
+    if sys.argv[1][0] == '-':
+      print "Usage: {} [set-length (default:max)]".format(sys.argv[0])
+      exit()
+    set_length = int(sys.argv[1])
+    if set_length < 1:
+      print "{}: Invalid set-length {}".format(sys.argv[0], sys.argv[1])
+      exit()
   corpus = Corpus()
   corpus.stdin()
-  corpus.find_matches()
+  corpus.find_matches(set_length=set_length)
 

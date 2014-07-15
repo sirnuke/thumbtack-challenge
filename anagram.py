@@ -27,39 +27,43 @@ class Corpus(object):
     self._words.append((word, sorted(word)))
 
   def find_matches(self, length=ANAGRAM_LENGTH, set_length=SET_LENGTH):
-    matches = []
+    matches = {}
     data = {}
-    if set_length:
-      match_length = set_length
-    else:
-      match_length = 2
+    match_length = 2
     for pair in itertools.combinations(self._words, length):
-      n = pair[0][0] + ', ' + pair[1][0]
+      n = "{}, {}".format(pair[0][0], pair[1][0])
+      s = {pair[0][0], pair[1][0]}
       t = ''.join(sorted(pair[0][1] + pair[1][1]))
       k = t[:KEY_LENGTH]
       if not k in data:
         data[k] = {}
       if t in data[k]:
-        data[k][t].append(n)
-        l = len(data[k][t])
-        if set_length:
-          if l > match_length:
-            match_length += 1
-            matches = [t]
-          elif l == match_length:
-            matches.append(t)
-        else:
-          if l == match_length + 1:
-            matches.remove(t)
-          elif l == match_length:
-            matches.append(t)
+        unique = True
+        for existing in data[k][t]:
+          if len(existing[1] & s) != 0:
+            unique = False
+            break
+        if unique:
+          data[k][t].append((n, s))
+          if t in matches:
+            matches[t] += 1
+          else:
+            matches[t] = 2
+          if matches[t] > match_length:
+            match_length = matches[t]
       else:
-        data[k][t] = [n]
+        data[k][t] = [(n, s)]
     if not set_length:
       print "[length is {}]".format(match_length)
+    else:
+      match_length = set_length
     for t in matches:
+      if matches[t] != match_length:
+        continue
       k = t[:KEY_LENGTH]
-      print '; '.join(data[k][t])
+      for n in data[k][t]:
+        sys.stdout.write("{}; ".format(n[0]))
+      print
 
 if __name__ == '__main__':
   set_length = SET_LENGTH

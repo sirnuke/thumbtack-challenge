@@ -22,17 +22,17 @@ class Corpus(object):
       return
     word = word.lower()
     for w in self._words:
-      if w[0] == word: return
-    self._words.append((word, sorted(word)))
+      if w == word: return
+    self._words.append(word)
 
-  def find_matches(self, length=ANAGRAM_LENGTH, set_length=SET_LENGTH):
+  def find_matches(self, anagram_length=ANAGRAM_LENGTH, set_length=SET_LENGTH):
     matches = {}
     data = {}
     match_length = 2
-    for pair in itertools.combinations(self._words, length):
-      n = "{}, {}".format(pair[0][0], pair[1][0])
-      s = {pair[0][0], pair[1][0]}
-      t = ''.join(sorted(pair[0][1] + pair[1][1]))
+    for pair in itertools.combinations(self._words, anagram_length):
+      n = ', '.join(pair)
+      s = set(pair)
+      t = ''.join(sorted(''.join(pair)))
       k = t[:KEY_LENGTH]
       if not k in data: data[k] = {}
       if t in data[k]:

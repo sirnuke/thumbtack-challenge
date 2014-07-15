@@ -30,27 +30,21 @@ class Corpus(object):
     data = {}
     match_length = 2
     for pair in itertools.combinations(self._words, anagram_length):
-      n = ', '.join(pair)
+      name = ', '.join(pair)
       s = set(pair)
       t = ''.join(sorted(''.join(pair)))
-      k = t[:KEY_LENGTH]
-      if not k in data: data[k] = {}
-      if t in data[k]:
-        unique = True
-        for existing in data[k][t]:
-          if len(existing[1] & s) != 0:
-            unique = False
-            break
-        if unique:
-          data[k][t].append((n, s))
-          if t in matches:
-            matches[t] += 1
-          else:
-            matches[t] = 2
-          if matches[t] > match_length:
-            match_length = matches[t]
-      else:
-        data[k][t] = [(n, s)]
+      key = t[:KEY_LENGTH]
+      if not key in data: data[key] = {}
+      if not t in data[key]: data[key][t] = []
+      unique = True
+      for existing in data[key][t]:
+        if len(existing[1] & s) != 0:
+          unique = False
+          break
+      if unique:
+        data[key][t].append((name, s))
+        matches[t] = len(data[key][t])
+        if matches[t] > match_length: match_length = matches[t]
     if not set_length:
       print "(length is {})".format(match_length)
     else:

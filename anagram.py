@@ -62,16 +62,7 @@ class Corpus(object):
       print
 
 if __name__ == '__main__':
-  set_length = SET_LENGTH
-  if len(sys.argv) >= 2:
-    if sys.argv[1][0] == '-':
-      print "Usage: {} [set-length (default:max)]".format(sys.argv[0])
-      exit()
-    set_length = int(sys.argv[1])
-    if set_length < 1:
-      print "{}: Invalid set-length {}".format(sys.argv[0], sys.argv[1])
-      exit()
   corpus = Corpus()
   corpus.stdin()
-  corpus.find_matches(set_length=set_length)
+  corpus.find_matches()
 

@@ -38,13 +38,20 @@ class Corpus(object):
         data[k] = {}
       if t in data[k]:
         data[k][t].append(n)
-        if len(data[k][t]) > match_length:
+        l = len(data[k][t])
+        if l > match_length:
           match_length += 1
           matches = [t]
-        elif len(data[k][t]) == match_length:
+        elif l == match_length:
           matches.append(t)
       else:
         data[k][t] = [n]
+    print "[length is {}]".format(match_length)
+    for t in matches:
+      k = t[:KEY_LENGTH]
+      print '; '.join(data[k][t])
+
+
 
 if __name__ == '__main__':
   corpus = Corpus()

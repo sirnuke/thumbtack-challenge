@@ -22,8 +22,7 @@ class Corpus(object):
       return
     word = word.lower()
     for w in self._words:
-      if w[0] == word:
-        return
+      if w[0] == word: return
     self._words.append((word, sorted(word)))
 
   def find_matches(self, length=ANAGRAM_LENGTH, set_length=SET_LENGTH):
@@ -35,8 +34,7 @@ class Corpus(object):
       s = {pair[0][0], pair[1][0]}
       t = ''.join(sorted(pair[0][1] + pair[1][1]))
       k = t[:KEY_LENGTH]
-      if not k in data:
-        data[k] = {}
+      if not k in data: data[k] = {}
       if t in data[k]:
         unique = True
         for existing in data[k][t]:
@@ -54,14 +52,12 @@ class Corpus(object):
       else:
         data[k][t] = [(n, s)]
     if not set_length:
-      print "[length is {}]".format(match_length)
+      print "(length is {})".format(match_length)
     else:
       match_length = set_length
     for t in matches:
-      if matches[t] != match_length:
-        continue
-      k = t[:KEY_LENGTH]
-      for n in data[k][t]:
+      if matches[t] != match_length: continue
+      for n in data[t[:KEY_LENGTH]][t]:
         sys.stdout.write("{}; ".format(n[0]))
       print
 

@@ -36,12 +36,7 @@ class Corpus(object):
       key = t[:KEY_LENGTH]
       if not key in data: data[key] = {}
       if not t in data[key]: data[key][t] = []
-      unique = True
-      for existing in data[key][t]:
-        if len(existing[1] & s) != 0:
-          unique = False
-          break
-      if unique:
+      if self._is_unique(s, data[key][t]):
         data[key][t].append((name, s))
         matches[t] = len(data[key][t])
         if matches[t] > match_length: match_length = matches[t]
@@ -54,6 +49,12 @@ class Corpus(object):
       for n in data[t[:KEY_LENGTH]][t]:
         sys.stdout.write("{}; ".format(n[0]))
       print
+
+  def _is_unique(self, pair, friends):
+    for existing in friends:
+      if len(existing[1] & pair) != 0:
+        return False
+    return True
 
 if __name__ == '__main__':
   corpus = Corpus()

@@ -9,7 +9,7 @@ SET_LENGTH = None
 MINIMUM_WORD_LENGTH = 4
 KEY_LENGTH = 1
 
-class Corpus(object):
+class AnagramPairs(object):
   def __init__(self):
     self._words = []
 
@@ -30,33 +30,35 @@ class Corpus(object):
     data = {}
     match_length = 2
     for pair in itertools.combinations(self._words, anagram_length):
-      s = set(pair)
-      t = ''.join(sorted(''.join(pair)))
-      key = t[:KEY_LENGTH]
+      chars = ''.join(sorted(''.join(pair)))
+      key = chars[:KEY_LENGTH]
+      pair = set(pair)
       if not key in data: data[key] = {}
-      if not t in data[key]: data[key][t] = []
-      if self._is_unique(s, data[key][t]):
-        data[key][t].append(s)
-        matches[t] = len(data[key][t])
-        if matches[t] > match_length: match_length = matches[t]
+      if not chars in data[key]: data[key][chars] = []
+
+      if self._is_unique(pair, data[key][chars]):
+        data[key][chars].append(pair)
+        matches[chars] = len(data[key][chars])
+        if matches[chars] > match_length:
+          match_length = matches[chars]
+
     if not set_length:
       print "(length is {})".format(match_length)
     else:
       match_length = set_length
-    for t in matches:
-      if matches[t] != match_length: continue
-      for n in data[t[:KEY_LENGTH]][t]:
-        sys.stdout.write("{}; ".format(', '.join(n)))
-      print
+
+    for chars,count in matches.iteritems():
+      if count != match_length: continue
+      print '; '.join(map(lambda x: ', '.join(x), data[chars[:KEY_LENGTH]][chars]))
 
   def _is_unique(self, pair, matches):
     for possible in matches:
-      if (possible & pair) != 0:
+      if len(possible & pair) != 0:
         return False
     return True
 
 if __name__ == '__main__':
-  corpus = Corpus()
-  corpus.stdin()
-  corpus.find_matches()
+  anagrams = AnagramPairs()
+  anagrams.stdin()
+  anagrams.find_matches()
 
